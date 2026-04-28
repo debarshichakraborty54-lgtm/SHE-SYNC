@@ -1,27 +1,32 @@
 let currentCycleId = null;
 let chart = null;
 
-document.addEventListener('DOMContentLoaded', async () => {
-  if (!getToken()) {
-    window.location.href = 'index.html';
-    return;
-  }
-  await loadDashboard();
-});
+// Mock data
+const mockCycles = [
+  { id: 1, start_date: '2026-04-01', end_date: '2026-04-28', duration_days: 28, avg_flow_level: 'moderate', clot_count: 0 },
+  { id: 2, start_date: '2026-04-28', end_date: null, duration_days: null, avg_flow_level: null, clot_count: 0 }
+];
+const mockCurrentCycle = mockCycles.find(c => !c.end_date);
+const mockAlerts = [];
+const mockInsights = { avg_cycle_length: 28, common_flow: 'moderate', trend: 'Stable' };
+const mockFlowReadings = [
+  { reading_date: '2026-04-28', intensity: 0.5 },
+  { reading_date: '2026-04-29', intensity: 0.7 },
+  { reading_date: '2026-04-30', intensity: 0.6 },
+  { reading_date: '2026-05-01', intensity: 0.8 }
+];
+const mockClots = [];
 
-document.getElementById('logout-btn').addEventListener('click', () => {
-  localStorage.removeItem('shesync_token');
-  window.location.href = 'index.html';
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadDashboard();
 });
 
 async function loadDashboard() {
   try {
-    const [cycles, currentCycle, alerts, insights] = await Promise.all([
-      api.cycles.getAll(),
-      api.cycles.getCurrent(),
-      api.alerts.get(),
-      api.insights.get(),
-    ]);
+    const cycles = mockCycles;
+    const currentCycle = mockCurrentCycle;
+    const alerts = mockAlerts;
+    const insights = mockInsights;
 
     loadCycleStatus(currentCycle, insights);
     loadCycleSelect(cycles);
@@ -71,7 +76,7 @@ function loadCycleSelect(cycles) {
 }
 
 async function loadFlowChart(cycleId) {
-  const readings = await api.flow.get(cycleId);
+  const readings = mockFlowReadings;
   const ctx = document.getElementById('flow-canvas').getContext('2d');
   if (chart) chart.destroy();
   chart = new Chart(ctx, {
@@ -96,7 +101,7 @@ async function loadFlowChart(cycleId) {
 }
 
 async function loadClotLog(cycleId) {
-  const clots = await api.clots.get(cycleId);
+  const clots = mockClots;
   const tbody = document.querySelector('#clot-table tbody');
   tbody.innerHTML = '';
   clots.forEach(clot => {
@@ -174,8 +179,11 @@ document.getElementById('clot-form').addEventListener('submit', async (e) => {
   const size = document.getElementById('clot-size').value;
   const notes = document.getElementById('clot-notes').value;
   try {
-    await api.clots.create({ cycle_id: currentCycleId, detected_at: datetime, clot_size: size, notes });
+    // Mock create clot
+    const newClot = { detected_at: datetime, clot_size: size, notes };
+    mockClots.push(newClot);
     clotModal.style.display = 'none';
+    document.getElementById('clot-form').reset();
     await loadClotLog(currentCycleId);
   } catch (err) {
     alert('Failed to add clot: ' + err.message);
@@ -194,11 +202,13 @@ document.getElementById('cycle-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const startDate = document.getElementById('cycle-start-date').value;
   try {
-    await api.cycles.create({ start_date: startDate });
+    // Mock create cycle
+    const newCycle = { id: mockCycles.length + 1, start_date: startDate, end_date: null, duration_days: null, avg_flow_level: null, clot_count: 0 };
+    mockCycles.push(newCycle);
     cycleModal.style.display = 'none';
     document.getElementById('cycle-form').reset();
-    // Reload dashboard with new cycle
-    window.location.href = 'dashboard.html';
+    // Reload dashboard
+    await loadDashboard();
   } catch (err) {
     alert('Failed to start cycle: ' + err.message);
   }
