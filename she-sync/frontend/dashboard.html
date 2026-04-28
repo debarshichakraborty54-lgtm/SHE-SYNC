@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SHE SYNC - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>SHE SYNC</h1>
+    <button id="logout-btn">Logout</button>
+  </header>
+  <div class="dashboard">
+    <div class="card" id="cycle-status">
+      <h2>Cycle Status</h2>
+      <p id="cycle-info">Loading...</p>
+      <button id="start-cycle-btn" class="btn-secondary">Start New Cycle</button>
+    </div>
+    <div class="card" id="flow-chart">
+      <h2>Blood Flow Intensity</h2>
+      <select id="cycle-select"></select>
+      <canvas id="flow-canvas"></canvas>
+    </div>
+    <div class="card" id="clot-log">
+      <h2>Blood Clotting Log</h2>
+      <button id="add-clot-btn">Add Entry</button>
+      <table id="clot-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Size</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="card" id="cycle-history">
+      <h2>Cycle History</h2>
+      <table id="cycle-table">
+        <thead>
+          <tr>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Duration</th>
+            <th>Avg Flow</th>
+            <th>Clot Count</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="card" id="alerts">
+      <h2>Anomaly Alerts</h2>
+      <div id="alerts-list"></div>
+    </div>
+    <div class="card" id="insights">
+      <h2>Health Insights</h2>
+      <p id="insights-content">Loading...</p>
+    </div>
+  </div>
+  <div id="cycle-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Start New Period</h2>
+      <form id="cycle-form">
+        <label for="cycle-start-date">When did your period start?</label>
+        <input type="date" id="cycle-start-date" required>
+        <button type="submit">Start Cycle</button>
+      </form>
+    </div>
+  </div>
+  <div id="clot-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Add Clotting Entry</h2>
+      <form id="clot-form">
+        <input type="datetime-local" id="clot-datetime" required>
+        <select id="clot-size" required>
+          <option value="small">Small</option>
+          <option value="medium">Medium</option>
+          <option value="large">Large</option>
+        </select>
+        <textarea id="clot-notes" placeholder="Notes"></textarea>
+        <button type="submit">Add</button>
+      </form>
+    </div>
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
